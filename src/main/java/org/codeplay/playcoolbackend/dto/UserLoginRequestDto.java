@@ -3,8 +3,7 @@ package org.codeplay.playcoolbackend.dto;
 import lombok.Data;
 
 @Data
-public class UserRegisterRequestDto {
+public class UserLoginRequestDto {
     private String username;
-    private String email;
     private String password;
 }
