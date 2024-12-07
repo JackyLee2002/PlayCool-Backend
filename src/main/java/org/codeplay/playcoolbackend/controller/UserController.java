@@ -3,17 +3,16 @@ package org.codeplay.playcoolbackend.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.dto.AuthenResponseDto;
 import org.codeplay.playcoolbackend.dto.User;
+import org.codeplay.playcoolbackend.dto.UserLoginRequestDto;
 import org.codeplay.playcoolbackend.dto.UserRegisterRequestDto;
 import org.codeplay.playcoolbackend.repository.UserRepository;
 import org.codeplay.playcoolbackend.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -42,6 +41,7 @@ public class UserController {
         }
         User user = new User();
         user.setName(userRegisterRequestDto.getUsername());
+        user.setEmail(userRegisterRequestDto.getEmail());
         user.setPassword(passwordEncoder.encode(userRegisterRequestDto.getPassword()));
         userRepository.save(user);
         var jwt = jwtService.generateToken(user);
@@ -50,16 +50,21 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public AuthenResponseDto login(@RequestBody UserRegisterRequestDto userRegisterRequestDto) {
+    public AuthenResponseDto login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userRegisterRequestDto.getUsername(), userRegisterRequestDto.getPassword()));
+                new UsernamePasswordAuthenticationToken(userLoginRequestDto.getUsername(), userLoginRequestDto.getPassword()));
 
-       var  user = userRepository.findUserByName(userRegisterRequestDto.getUsername())
+       var  user = userRepository.findUserByName(userLoginRequestDto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
         var jwt = jwtService.generateToken(user);
         return AuthenResponseDto.builder().token(jwt).build();
+    }
+
+    @GetMapping("/me")
+    public User me() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 }
