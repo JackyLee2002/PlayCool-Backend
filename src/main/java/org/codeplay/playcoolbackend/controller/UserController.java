@@ -36,7 +36,10 @@ public class UserController {
 
     @PostMapping("/register")
     public AuthenResponseDto register(@RequestBody UserRegisterRequestDto userRegisterRequestDto) {
-
+        Optional<User> userOptional = userRepository.findUserByName(userRegisterRequestDto.getUsername());
+        if (userOptional.isPresent()) {
+            throw new IllegalArgumentException("User already exists");
+        }
         User user = new User();
         user.setName(userRegisterRequestDto.getUsername());
         user.setPassword(passwordEncoder.encode(userRegisterRequestDto.getPassword()));
