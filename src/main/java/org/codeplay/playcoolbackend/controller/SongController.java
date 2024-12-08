@@ -2,6 +2,7 @@ package org.codeplay.playcoolbackend.controller;
 
 import org.codeplay.playcoolbackend.dto.SongDto;
 import org.codeplay.playcoolbackend.service.SongService;
+import org.codeplay.playcoolbackend.service.SongServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

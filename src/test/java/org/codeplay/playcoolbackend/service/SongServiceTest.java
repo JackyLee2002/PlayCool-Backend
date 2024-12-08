@@ -24,7 +24,7 @@ public class SongServiceTest {
     private SongRepository songRepository;
 
     @InjectMocks
-    private SongService songService;
+    private SongServiceImpl songService;
 
     @Spy
     private SongMapper songMapper = Mappers.getMapper(SongMapper.class);
