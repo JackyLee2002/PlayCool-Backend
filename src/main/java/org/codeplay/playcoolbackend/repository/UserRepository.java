@@ -1,6 +1,6 @@
 package org.codeplay.playcoolbackend.repository;
 
-import org.codeplay.playcoolbackend.dto.User;
+import org.codeplay.playcoolbackend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
