@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/song")
+@RequestMapping("/songs")
 public class SongController {
     @Autowired
     private SongService songService;
@@ -20,8 +20,8 @@ public class SongController {
     }
 
     @PostMapping("/vote")
-    public ResponseEntity<Void> vote(@RequestBody Long id) {
-        songService.vote(id);
+    public ResponseEntity<Void> vote(@RequestBody SongDto songDto) {
+        songService.vote(songDto.getId());
         return ResponseEntity.ok().build();
     }
 }
