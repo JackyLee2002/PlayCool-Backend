@@ -5,6 +5,7 @@ import org.codeplay.playcoolbackend.dto.SongDto;
 import org.codeplay.playcoolbackend.repository.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +27,7 @@ public class SongService {
     }
 
 
+    @Transactional
     public void vote(Long id) {
         songRepository.findById(id)
                 .ifPresent(song -> {
