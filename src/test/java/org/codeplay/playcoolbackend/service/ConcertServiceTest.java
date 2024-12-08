@@ -1,6 +1,6 @@
 package org.codeplay.playcoolbackend.service;
 
-import org.codeplay.playcoolbackend.dto.Concert;
+import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.repository.ConcertRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

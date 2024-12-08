@@ -2,7 +2,7 @@ package org.codeplay.playcoolbackend.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.dto.AuthenResponseDto;
-import org.codeplay.playcoolbackend.dto.User;
+import org.codeplay.playcoolbackend.entity.User;
 import org.codeplay.playcoolbackend.dto.UserLoginRequestDto;
 import org.codeplay.playcoolbackend.dto.UserRegisterRequestDto;
 import org.codeplay.playcoolbackend.repository.UserRepository;
