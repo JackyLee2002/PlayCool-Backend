@@ -33,4 +33,7 @@ public class Venue {
 
     @Column(name = "capacity", nullable = false)
     private int capacity;
+
+    @Column(name = "seat_image", nullable = false)
+    private String seatsImage;
 }

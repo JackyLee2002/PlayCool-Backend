@@ -41,4 +41,7 @@ public class Concert {
 
     @Column(name = "finished", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean finished = false;
+
+    @Column(name = "concert_image", nullable = false)
+    private String concertImage;
 }

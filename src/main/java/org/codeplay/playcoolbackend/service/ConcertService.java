@@ -15,7 +15,7 @@ public class ConcertService {
     private ConcertRepository concertRepository;
 
     public List<Concert> getAllConcerts() {
-        return concertRepository.findAll();
+        return concertRepository.findAllByOrderByDateTimeDesc();
     }
 
     public List<Concert> getComingConcerts() {
@@ -25,4 +25,5 @@ public class ConcertService {
     public Optional<Concert> getConcertById(Long id) {
         return concertRepository.findById(id);
     }
+
 }
