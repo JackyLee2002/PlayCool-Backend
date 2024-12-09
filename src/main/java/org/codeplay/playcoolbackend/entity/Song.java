@@ -3,8 +3,6 @@ package org.codeplay.playcoolbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 
@@ -20,7 +18,9 @@ public class Song {
     @Column(unique = true)
     private String name;
 
-    @Column(columnDefinition = "bigint default 0")
-    private Long votes;
+    @Column
+    private String album;
 
+    @Column
+    private String releaseDate;
 }

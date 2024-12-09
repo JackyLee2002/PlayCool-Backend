@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/concerts/**").permitAll()
                         .requestMatchers("/venues/**").permitAll()
                         .requestMatchers("/songs/**").permitAll()
+                        .requestMatchers("/songs/vote").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(

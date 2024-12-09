@@ -1,9 +1,13 @@
 package org.codeplay.playcoolbackend.service;
 
 import org.codeplay.playcoolbackend.dto.SongDto;
+import org.codeplay.playcoolbackend.dto.VoteDto;
 import org.codeplay.playcoolbackend.entity.Song;
+import org.codeplay.playcoolbackend.entity.Vote;
 import org.codeplay.playcoolbackend.mapper.SongMapper;
+import org.codeplay.playcoolbackend.mapper.VoteMapper;
 import org.codeplay.playcoolbackend.repository.SongRepository;
+import org.codeplay.playcoolbackend.repository.VoteRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -12,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -23,44 +29,56 @@ public class SongServiceTest {
     @Mock
     private SongRepository songRepository;
 
+    @Mock
+    private VoteRepository voteRepository;
+
     @InjectMocks
     private SongServiceImpl songService;
 
     @Spy
     private SongMapper songMapper = Mappers.getMapper(SongMapper.class);
 
-    @Test
-    public void should_return_all_songs_when_getAll() {
-        // given
-        Song song = new Song();
-        song.setId(1L);
-        song.setName("song1");
-        song.setVotes(1L);
-        when(songRepository.findAll()).thenReturn(List.of(song));
+    @Spy
+    private VoteMapper voteMapper = Mappers.getMapper(VoteMapper.class);
 
-        // when
+    @Test
+    void testGetAll() {
+        List<Song> mockSongs = Arrays.asList(
+                songMapper.toPo(new SongDto(1L, "Song A", "Album A", "2023-01-01", 1L)),
+                songMapper.toPo(new SongDto(2L, "Song B", "Album B", "2023-01-01", 2L))
+        );
+
+        when(songRepository.findAll()).thenReturn(mockSongs);
+
         List<SongDto> result = songService.getAll();
 
-        // then
-        assertEquals(1, result.size());
-        assertEquals("song1", result.get(0).getName());
-        assertEquals(1L, result.get(0).getVotes());
+        assertEquals(2, result.size());
+        assertEquals("Song A", result.get(0).getName());
+        assertEquals("Song B", result.get(1).getName());
     }
 
     @Test
-    public void should_vote_success_when_vote() {
-        // given
-        Song song = new Song();
-        song.setId(1L);
-        song.setName("song1");
-        song.setVotes(1L);
-        when(songRepository.findById(1L)).thenReturn(java.util.Optional.of(song));
+    void testIsVoted() {
+        Long userId = 1L;
+        when(voteRepository.existsByUserId(userId)).thenReturn(true);
 
-        // when
-        songService.vote(1L);
+        boolean result = songService.isVoted(userId);
 
-        // then
-        verify(songRepository, times(1)).save(song);
-        assertEquals(2L, song.getVotes());
+        assertEquals(true, result);
     }
+
+    @Test
+    void testVote() {
+        VoteDto voteDto = new VoteDto(1L, 1L);
+        Vote vote = new Vote();
+        vote.setUserId(voteDto.getUserId());
+        vote.setSongId(voteDto.getSongId());
+
+        when(voteRepository.save(any(Vote.class))).thenReturn(vote);
+
+        songService.vote(voteDto);
+
+        verify(voteRepository, times(1)).save(any(Vote.class));
+    }
+
 }
