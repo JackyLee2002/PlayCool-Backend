@@ -1,8 +1,9 @@
 package org.codeplay.playcoolbackend.common;
 
-public enum OrderStatus {
+public enum PaymentStatus {
     PENDING,
     COMPLETED,
     REFUNDED,
-    UNUSED,
+    FAILED,
+    NONPAYMENT,
 }
