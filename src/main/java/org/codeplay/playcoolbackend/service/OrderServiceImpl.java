@@ -39,13 +39,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(saveOrder -> {
 
 //                    OrderResponseDto orderResponse = orderMapper.mapOrderToOrderResponseDto(saveOrder);
-                    OrderResponseDto orderResponse = new OrderResponseDto();
-                    orderResponse.setOrderId(saveOrder.getOrderId());
-                    orderResponse.setOrderStatus(saveOrder.getOrderStatus());
-                    orderResponse.setPaymentStatus(saveOrder.getPaymentStatus());
-                    orderResponse.setPrice(saveOrder.getPrice());
-                    orderResponse.setPaymentMethod(saveOrder.getPaymentMethod());
-                    orderResponse.setCreatedAt(saveOrder.getCreatedAt());
+                    OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
 
 //                    extracted(order, orderResponseDto);
                     orderResponse.setConcertName("concertName");
@@ -55,6 +49,17 @@ public class OrderServiceImpl implements OrderService {
                     return orderResponse;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private static OrderResponseDto getOrderResponseDto(Order saveOrder) {
+        return OrderResponseDto.builder()
+                .orderId(saveOrder.getOrderId())
+                .orderStatus(saveOrder.getOrderStatus())
+                .paymentStatus(saveOrder.getPaymentStatus())
+                .price(saveOrder.getPrice())
+                .paymentMethod(saveOrder.getPaymentMethod())
+                .createdAt(saveOrder.getCreatedAt())
+                .build();
     }
 
     private static void extracted(Order order, OrderResponseDto orderResponseDto) {
@@ -86,28 +91,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto) {
-        Order order = new Order();
 
-        order.setUserId(orderRequestDto.getUserId());
-        order.setConcertId(orderRequestDto.getConcertId());
-        order.setSeatId(orderRequestDto.getSeatId());
-        order.setPrice(orderRequestDto.getPrice());
-        order.setPaymentMethod(orderRequestDto.getPaymentMethod());
+        Order order = Order.builder()
+                .userId(orderRequestDto.getUserId())
+                .concertId(orderRequestDto.getConcertId())
+                .seatId(orderRequestDto.getSeatId())
+                .price(orderRequestDto.getPrice())
+                .paymentMethod(orderRequestDto.getPaymentMethod())
+                .orderStatus(OrderStatus.PENDING)
+                .paymentStatus(PaymentStatus.PENDING)
+                .createdAt(new Date())
+                .build();
 
-        order.setOrderStatus(OrderStatus.PENDING);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setCreatedAt(new Date());
         Order saveOrder = orderRepository.save(order);
 
-//        OrderResponseDto orderResponse = orderMapper.mapOrderToOrderResponseDto(saveOrder);
-        OrderResponseDto orderResponse = new OrderResponseDto();
-        orderResponse.setOrderId(saveOrder.getOrderId());
-        orderResponse.setOrderStatus(saveOrder.getOrderStatus());
-        orderResponse.setPaymentStatus(saveOrder.getPaymentStatus());
-        orderResponse.setPrice(saveOrder.getPrice());
-        orderResponse.setPaymentMethod(saveOrder.getPaymentMethod());
-        orderResponse.setCreatedAt(saveOrder.getCreatedAt());
 
+        OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
 
         //todo use Repository  may be use function get info by id
         orderResponse.setConcertName("concertName");
@@ -126,13 +125,7 @@ public class OrderServiceImpl implements OrderService {
         Order saveOrder = orderRepository.save(order);
 
 //        OrderResponseDto orderResponse = orderMapper.mapOrderToOrderResponseDto(saveOrder);
-        OrderResponseDto orderResponse = new OrderResponseDto();
-        orderResponse.setOrderId(saveOrder.getOrderId());
-        orderResponse.setOrderStatus(saveOrder.getOrderStatus());
-        orderResponse.setPaymentStatus(saveOrder.getPaymentStatus());
-        orderResponse.setPrice(saveOrder.getPrice());
-        orderResponse.setPaymentMethod(saveOrder.getPaymentMethod());
-        orderResponse.setCreatedAt(saveOrder.getCreatedAt());
+        OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
 
 //        extracted(saveOrder, orderResponse);
         orderResponse.setConcertName("concertName");
@@ -147,16 +140,11 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDto useOrder(Integer orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(null);
         order.setOrderStatus(OrderStatus.COMPLETED);
+
         Order saveOrder = orderRepository.save(order);
 
 //        OrderResponseDto orderResponse = orderMapper.mapOrderToOrderResponseDto(saveOrder);
-        OrderResponseDto orderResponse = new OrderResponseDto();
-        orderResponse.setOrderId(saveOrder.getOrderId());
-        orderResponse.setOrderStatus(saveOrder.getOrderStatus());
-        orderResponse.setPaymentStatus(saveOrder.getPaymentStatus());
-        orderResponse.setPrice(saveOrder.getPrice());
-        orderResponse.setPaymentMethod(saveOrder.getPaymentMethod());
-        orderResponse.setCreatedAt(saveOrder.getCreatedAt());
+        OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
 
         //        extracted(saveOrder, orderResponse);
         orderResponse.setConcertName("concertName");
