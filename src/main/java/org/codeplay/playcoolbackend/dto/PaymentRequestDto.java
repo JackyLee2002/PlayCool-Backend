@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PaymentRequestDto {
     private Long orderId;
-    private Integer price;
     private String paymentMethod;
 }

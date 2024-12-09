@@ -3,6 +3,7 @@ package org.codeplay.playcoolbackend.service;
 import org.codeplay.playcoolbackend.dto.OrderRequestDto;
 import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
+import org.codeplay.playcoolbackend.entity.Order;
 
 import java.util.List;
 
@@ -13,9 +14,11 @@ public interface OrderService {
 
     OrderResponseDto payOrder(PaymentRequestDto paymentRequestDto);
 
-    OrderResponseDto useOrder(Integer orderId);
+    OrderResponseDto useOrder(Long orderId);
 
-    OrderResponseDto getOrderById(Integer orderId);
+    OrderResponseDto getOrderById(Long orderId);
 
-    OrderResponseDto snapOrder(Integer orderId);
+    OrderResponseDto snapOrder(Long orderId);
+
+    Order getOrder(Long orderId);
 }
