@@ -29,12 +29,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 public class OrderControllerTest {
 
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @MockitoBean
-//    private OrderService orderService;
-//
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private OrderService orderService;
+
 //    @Test
 //    public void given_useId_when_test_getAllOrders_byUserId_then_list_orderResponseDto() throws Exception {
 //        OrderResponseDto order = new OrderResponseDto();
