@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class OrderRequestDto {
-    private Integer userId;
-    private Integer concertId;
-    private Integer seatId;
+    private Long userId;
+    private Long concertId;
+    private Long seatId;
     private Integer price;
     private String paymentMethod;
 }

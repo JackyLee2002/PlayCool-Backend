@@ -22,10 +22,10 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    private Integer orderId;
-    private Integer userId;
-    private Integer seatId;
-    private Integer concertId;
+    private Long orderId;
+    private Long userId;
+    private Long seatId;
+    private Long concertId;
     private OrderStatus orderStatus;
     private Integer price;
     private String paymentMethod;

@@ -35,16 +35,16 @@ public class OrderServiceTest {
     @Test
     public void givenUserId_whenGetAllOrdersByUserId_thenListOrderResponseDto() {
         Order order = new Order();
-        order.setOrderId(1);
+        order.setOrderId(1L);
         order.setOrderStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
         order.setPrice(100);
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
 
-        when(orderRepository.findOrdersByUserId(1)).thenReturn(List.of(order));
+        when(orderRepository.findOrdersByUserId(1L)).thenReturn(List.of(order));
 
-        List<OrderResponseDto> orders = orderService.getOrdersByUserId(1);
+        List<OrderResponseDto> orders = orderService.getOrdersByUserId(1L);
         assertEquals(1, orders.size());
         assertEquals(OrderStatus.PENDING, orders.get(0).getOrderStatus());
     }
@@ -52,13 +52,13 @@ public class OrderServiceTest {
     @Test
     public void givenOrderRequestDto_whenCreateOrder_thenOrderResponseDto() {
         OrderRequestDto orderRequestDto = new OrderRequestDto();
-        orderRequestDto.setUserId(1);
-        orderRequestDto.setConcertId(1);
+        orderRequestDto.setUserId(1L);
+        orderRequestDto.setConcertId(1L);
         orderRequestDto.setPrice(100);
         orderRequestDto.setPaymentMethod("paymentMethod");
 
         Order order = new Order();
-        order.setOrderId(1);
+        order.setOrderId(1L);
         order.setUserId(orderRequestDto.getUserId());
         order.setConcertId(orderRequestDto.getConcertId());
         order.setPrice(orderRequestDto.getPrice());
@@ -79,11 +79,11 @@ public class OrderServiceTest {
     @Test
     public void givenPaymentRequestDto_whenPayOrder_thenOrderResponseDto() {
         PaymentRequestDto paymentRequestDto = new PaymentRequestDto();
-        paymentRequestDto.setOrderId(1);
+        paymentRequestDto.setOrderId(1L);
         paymentRequestDto.setPaymentMethod("paymentMethod");
 
         Order order = new Order();
-        order.setOrderId(1);
+        order.setOrderId(1L);
         order.setOrderStatus(OrderStatus.UNUSED);
         order.setPaymentStatus(PaymentStatus.COMPLETED);
         order.setPrice(100);
@@ -100,7 +100,7 @@ public class OrderServiceTest {
     @Test
     public void givenOrderId_whenUseOrder_thenOrderResponseDto() {
         Order order = new Order();
-        order.setOrderId(1);
+        order.setOrderId(1L);
         order.setOrderStatus(OrderStatus.COMPLETED);
         order.setPaymentStatus(PaymentStatus.COMPLETED);
         order.setPrice(100);

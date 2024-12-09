@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
 
     @Override
-    public List<OrderResponseDto> getOrdersByUserId(Integer userId) {
+    public List<OrderResponseDto> getOrdersByUserId(Long userId) {
         List<Order> orderByUserId = orderRepository.findOrdersByUserId(userId);
         return orderByUserId.stream()
                 .map(saveOrder -> {
@@ -119,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponseDto payOrder(PaymentRequestDto paymentRequestDto) {
-        Order order = orderRepository.findById(paymentRequestDto.getOrderId()).orElseThrow(null);
+        Order order = orderRepository.findById(Math.toIntExact(paymentRequestDto.getOrderId())).orElseThrow(null);
         order.setPaymentStatus(PaymentStatus.COMPLETED);
         order.setOrderStatus(OrderStatus.UNUSED);
         Order saveOrder = orderRepository.save(order);

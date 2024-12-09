@@ -7,7 +7,7 @@ import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
 import java.util.List;
 
 public interface OrderService {
-    List<OrderResponseDto> getOrdersByUserId(Integer userId);
+    List<OrderResponseDto> getOrdersByUserId(Long userId);
 
     OrderResponseDto createOrder(OrderRequestDto orderRequestDto);
 

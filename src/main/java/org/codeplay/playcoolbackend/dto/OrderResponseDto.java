@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class OrderResponseDto {
-    private Integer orderId;
+    private Long orderId;
     private String concertName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date concertDate;
