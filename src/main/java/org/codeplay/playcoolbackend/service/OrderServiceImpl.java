@@ -154,4 +154,18 @@ public class OrderServiceImpl implements OrderService {
 
         return orderResponse;
     }
+
+    @Override
+    public OrderResponseDto getOrderById(Integer orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(null);
+        return getOrderResponseDto(order);
+    }
+
+    @Override
+    public OrderResponseDto snapOrder(Integer orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(null);
+        order.setPaymentStatus(PaymentStatus.NONPAYMENT);
+        Order saveOrder = orderRepository.save(order);
+        return getOrderResponseDto(saveOrder);
+    }
 }

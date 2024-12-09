@@ -39,6 +39,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId()));
     }
 
+    @GetMapping("/getOrder/{orderId}")
+    public ResponseEntity<OrderResponseDto> getAllOrders(@AuthenticationPrincipal User user, @PathVariable Integer orderId) {
+        if (user == null) {
+            throw new IllegalArgumentException("Please login first");
+        }
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
     @PutMapping("/pay")
     public ResponseEntity<OrderResponseDto> payOrder(@AuthenticationPrincipal User user, @RequestBody PaymentRequestDto paymentRequestDto) {
         if (user == null) {
@@ -54,6 +62,15 @@ public class OrderController {
             throw new IllegalArgumentException("Please login first");
         }
         OrderResponseDto orderResponseDto = orderService.useOrder(orderId);
+        return ResponseEntity.ok(orderResponseDto);
+    }
+
+    @PutMapping("/snap/ticket/{orderId}")
+    public ResponseEntity<OrderResponseDto> snapOrder(@AuthenticationPrincipal User user, @PathVariable Integer orderId) {
+        if (user == null) {
+            throw new IllegalArgumentException("Please login first");
+        }
+        OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
         return ResponseEntity.ok(orderResponseDto);
     }
 }

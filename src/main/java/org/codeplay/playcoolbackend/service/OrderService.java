@@ -14,4 +14,8 @@ public interface OrderService {
     OrderResponseDto payOrder(PaymentRequestDto paymentRequestDto);
 
     OrderResponseDto useOrder(Integer orderId);
+
+    OrderResponseDto getOrderById(Integer orderId);
+
+    OrderResponseDto snapOrder(Integer orderId);
 }
