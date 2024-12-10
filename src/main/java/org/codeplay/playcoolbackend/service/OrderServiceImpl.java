@@ -3,6 +3,7 @@ package org.codeplay.playcoolbackend.service;
 import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.common.OrderStatus;
 import org.codeplay.playcoolbackend.common.PaymentStatus;
+import org.codeplay.playcoolbackend.common.SeatStatus;
 import org.codeplay.playcoolbackend.dto.OrderRequestDto;
 import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
@@ -14,6 +15,8 @@ import org.codeplay.playcoolbackend.repository.ConcertRepository;
 import org.codeplay.playcoolbackend.repository.OrderRepository;
 import org.codeplay.playcoolbackend.repository.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,14 +39,12 @@ public class OrderServiceImpl implements OrderService {
     private SeatRepository seatRepository;
 
     @Override
-    public List<OrderResponseDto> getOrdersByUserId(Long userId) {
-        List<Order> orderByUserId = orderRepository.findOrdersByUserId(userId);
-        return orderByUserId.stream()
-                .map(saveOrder -> {
-                    OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
-                    return extractedMethod(saveOrder, orderResponse);
-                })
-                .collect(Collectors.toList());
+    public Page<OrderResponseDto> getOrdersByUserId(Long userId, Pageable pageable) {
+        Page<Order> orderByUserId = orderRepository.findOrdersByUserId(userId, pageable);
+        return orderByUserId.map(saveOrder -> {
+            OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
+            return extractedMethod(saveOrder, orderResponse);
+        });
     }
 
     private static OrderResponseDto getOrderResponseDto(Order saveOrder) {
@@ -63,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
         if (concert != null) {
             orderResponseDto.setConcertName(concert.getTitle());
             orderResponseDto.setConcertDate(concert.getDateTime());
+            orderResponseDto.setConcertImage(concert.getConcertImage());
         }
 
         areaRepository.findById(order.getAreaId()).ifPresent(area -> {
@@ -108,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
         Order saveOrder = orderRepository.save(order);
 
         Seat seat = seatRepository.findById(order.getSeatId()).orElseThrow(null);
-        seat.setStatus(Seat.SeatStatus.Sold);
+        seat.setStatus(SeatStatus.Sold);
         seatRepository.save(seat);
 
         OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
@@ -141,13 +143,13 @@ public class OrderServiceImpl implements OrderService {
         // need seatId and the seatId status is Available
         List<Seat> availableSeats = seatRepository.findAll().stream()
                 .filter(seat -> seat.getArea().getAreaId().equals(order.getAreaId()))
-                .filter(seat -> Seat.SeatStatus.Available.equals(seat.getStatus()))
+                .filter(seat -> SeatStatus.Available.equals(seat.getStatus()))
                 .toList();
         if (availableSeats.isEmpty()) {
             throw new IllegalArgumentException("No available seats");
         }
         Seat seat = availableSeats.get(new Random().nextInt(availableSeats.size()));
-        seat.setStatus(Seat.SeatStatus.Locked);
+        seat.setStatus(SeatStatus.Locked);
         seatRepository.save(seat);
 
         order.setSeatId(seat.getSeatId());

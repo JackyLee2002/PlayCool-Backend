@@ -1,15 +1,12 @@
 package org.codeplay.playcoolbackend.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class AvailableSeatsCountDto {
     private String areaName;
 
     private Long availableSeatsCount;
-
-    public AvailableSeatsCountDto(String areaName, Long availableSeatsCount) {
-        this.areaName = areaName;
-        this.availableSeatsCount = availableSeatsCount;
-    }
 }

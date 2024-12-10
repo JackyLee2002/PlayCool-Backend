@@ -2,15 +2,26 @@ package org.codeplay.playcoolbackend.service;
 
 import org.codeplay.playcoolbackend.common.OrderStatus;
 import org.codeplay.playcoolbackend.common.PaymentStatus;
+import org.codeplay.playcoolbackend.common.SeatStatus;
 import org.codeplay.playcoolbackend.dto.OrderRequestDto;
 import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
+import org.codeplay.playcoolbackend.entity.Area;
 import org.codeplay.playcoolbackend.entity.Order;
+import org.codeplay.playcoolbackend.entity.Seat;
+import org.codeplay.playcoolbackend.entity.Venue;
+import org.codeplay.playcoolbackend.repository.AreaRepository;
+import org.codeplay.playcoolbackend.repository.ConcertRepository;
 import org.codeplay.playcoolbackend.repository.OrderRepository;
+import org.codeplay.playcoolbackend.repository.SeatRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +36,15 @@ public class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
 
+    @Mock
+    private SeatRepository seatRepository;
+
+    @Mock
+    private ConcertRepository concertRepository;
+
+    @Mock
+    private AreaRepository areaRepository;
+
     @InjectMocks
     private OrderServiceImpl orderService;
 
@@ -38,15 +58,17 @@ public class OrderServiceTest {
         order.setOrderId(1L);
         order.setOrderStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setPrice(100);
+        order.setPrice(100.0);
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
+        Pageable pageable = Pageable.ofSize(10);
 
-        when(orderRepository.findOrdersByUserId(1L)).thenReturn(List.of(order));
+        Page<Order> orderPage = new PageImpl<>(List.of(order), pageable, 1);
+        when(orderRepository.findOrdersByUserId(1L, pageable)).thenReturn(orderPage);
 
-        List<OrderResponseDto> orders = orderService.getOrdersByUserId(1L);
-        assertEquals(1, orders.size());
-        assertEquals(OrderStatus.PENDING, orders.get(0).getOrderStatus());
+        Page<OrderResponseDto> orders = orderService.getOrdersByUserId(1L, pageable);
+        assertEquals(1, orders.getTotalElements());
+        assertEquals(OrderStatus.PENDING, orders.getContent().get(0).getOrderStatus());
     }
 
     @Test
@@ -54,25 +76,25 @@ public class OrderServiceTest {
         OrderRequestDto orderRequestDto = new OrderRequestDto();
         orderRequestDto.setUserId(1L);
         orderRequestDto.setConcertId(1L);
-        orderRequestDto.setPrice(100);
+        orderRequestDto.setAreaId(1L);
         orderRequestDto.setPaymentMethod("paymentMethod");
 
         Order order = new Order();
         order.setOrderId(1L);
         order.setUserId(orderRequestDto.getUserId());
         order.setConcertId(orderRequestDto.getConcertId());
-        order.setPrice(orderRequestDto.getPrice());
+        order.setAreaId(orderRequestDto.getAreaId());
         order.setPaymentMethod(orderRequestDto.getPaymentMethod());
         order.setOrderStatus(OrderStatus.PENDING);
         order.setPaymentStatus(PaymentStatus.PENDING);
         order.setCreatedAt(new Date());
 
         when(orderRepository.save(any())).thenReturn(order);
+        when(areaRepository.findById(any())).thenReturn(Optional.of(new Area(1L, new Venue(), "test", 100.0, 1)));
 
         OrderResponseDto orderResponse = orderService.createOrder(orderRequestDto);
         assertEquals(OrderStatus.PENDING, orderResponse.getOrderStatus());
         assertEquals(PaymentStatus.PENDING, orderResponse.getPaymentStatus());
-        assertEquals(orderRequestDto.getPrice(), orderResponse.getPrice());
         assertEquals(orderRequestDto.getPaymentMethod(), orderResponse.getPaymentMethod());
     }
 
@@ -84,15 +106,16 @@ public class OrderServiceTest {
 
         Order order = new Order();
         order.setOrderId(1L);
+        order.setSeatId(1L);
         order.setOrderStatus(OrderStatus.UNUSED);
         order.setPaymentStatus(PaymentStatus.COMPLETED);
-        order.setPrice(100);
+        order.setPrice(100.0);
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(order)).thenReturn(order);
-
+        when(seatRepository.findById(any())).thenReturn(Optional.of(new Seat(1L, new Area(), "A1", SeatStatus.Sold)));
         OrderResponseDto orderResponse = orderService.payOrder(paymentRequestDto);
         assertEquals(OrderStatus.UNUSED, orderResponse.getOrderStatus());
     }
@@ -103,7 +126,7 @@ public class OrderServiceTest {
         order.setOrderId(1L);
         order.setOrderStatus(OrderStatus.COMPLETED);
         order.setPaymentStatus(PaymentStatus.COMPLETED);
-        order.setPrice(100);
+        order.setPrice(100.0);
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
 

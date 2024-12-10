@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.codeplay.playcoolbackend.common.SeatStatus;
 
 @Entity
 @Table(name = "seats")
@@ -30,9 +31,4 @@ public class Seat {
     @Column(name = "status", nullable = false)
     private SeatStatus status;
 
-    public enum SeatStatus {
-        Available,
-        Locked,
-        Sold
-    }
 }

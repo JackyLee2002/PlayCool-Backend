@@ -50,8 +50,8 @@ public class ConcertServiceTest {
         Concert concert = new Concert();
         when(concertRepository.findById(1L)).thenReturn(Optional.of(concert));
 
-        Optional<Concert> foundConcert = concertService.getConcertById(1L);
-        assertTrue(foundConcert.isPresent());
-        assertEquals(concert, foundConcert.get());
+        Concert foundConcert = concertService.getConcertById(1L);
+        assertTrue(foundConcert != null);
+        assertEquals(concert, foundConcert);
     }
 }

@@ -24,20 +24,16 @@ public class VenueController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Venue> getVenueById(@PathVariable Long id) {
-        return venueService.getVenueById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(venueService.getVenueById(id));
     }
 
     @GetMapping("/{id}/concerts")
     public ResponseEntity<List<Concert>> getConcertsByVenueId(@PathVariable Long id) {
-        List<Concert> concerts = venueService.getConcertsByVenueId(id);
-        return ResponseEntity.ok(concerts);
+        return ResponseEntity.ok(venueService.getConcertsByVenueId(id));
     }
 
     @GetMapping("/concerts")
     public ResponseEntity<List<Concert>> getConcertsByKeyword(@RequestParam String Keyword) {
-        List<Concert> concerts = venueService.getConcertByKeyword(Keyword);
-        return ResponseEntity.ok(concerts);
+        return ResponseEntity.ok(venueService.getConcertByKeyword(Keyword));
     }
 }

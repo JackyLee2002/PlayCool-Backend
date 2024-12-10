@@ -24,8 +24,8 @@ public class VenueService {
         return venueRepository.findAll();
     }
 
-    public Optional<Venue> getVenueById(Long id) {
-        return venueRepository.findById(id);
+    public Venue getVenueById(Long id) {
+        return venueRepository.findById(id).orElse(null);
     }
 
     public List<Concert> getConcertsByVenueId(Long venueId) {
