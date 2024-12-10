@@ -8,6 +8,9 @@ import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.User;
 import org.codeplay.playcoolbackend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +37,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getAllOrders(@AuthenticationPrincipal User user) {
+    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(@AuthenticationPrincipal User user, @RequestParam int page,
+                                                               @RequestParam int pageSize) {
         if (user == null) {
             throw new IllegalArgumentException("Please login first");
         }
-        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId()));
+        Pageable pageable=PageRequest.of(page,pageSize);
+        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId(),pageable));
     }
 
     @GetMapping("/{orderId}")

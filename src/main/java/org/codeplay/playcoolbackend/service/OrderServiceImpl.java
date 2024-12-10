@@ -15,6 +15,8 @@ import org.codeplay.playcoolbackend.repository.ConcertRepository;
 import org.codeplay.playcoolbackend.repository.OrderRepository;
 import org.codeplay.playcoolbackend.repository.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,14 +39,12 @@ public class OrderServiceImpl implements OrderService {
     private SeatRepository seatRepository;
 
     @Override
-    public List<OrderResponseDto> getOrdersByUserId(Long userId) {
-        List<Order> orderByUserId = orderRepository.findOrdersByUserId(userId);
-        return orderByUserId.stream()
-                .map(saveOrder -> {
-                    OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
-                    return extractedMethod(saveOrder, orderResponse);
-                })
-                .collect(Collectors.toList());
+    public Page<OrderResponseDto> getOrdersByUserId(Long userId, Pageable pageable) {
+        Page<Order> orderByUserId = orderRepository.findOrdersByUserId(userId, pageable);
+        return orderByUserId.map(saveOrder -> {
+            OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
+            return extractedMethod(saveOrder, orderResponse);
+        });
     }
 
     private static OrderResponseDto getOrderResponseDto(Order saveOrder) {
