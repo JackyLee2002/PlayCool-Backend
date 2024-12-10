@@ -1,6 +1,7 @@
 package org.codeplay.playcoolbackend.service;
 
 import org.codeplay.playcoolbackend.dto.VoteDto;
+import org.codeplay.playcoolbackend.entity.Song;
 import org.codeplay.playcoolbackend.mapper.SongMapper;
 import org.codeplay.playcoolbackend.dto.SongDto;
 import org.codeplay.playcoolbackend.mapper.VoteMapper;
@@ -29,7 +30,8 @@ public class SongServiceImpl implements SongService {
     private VoteMapper voteMapper;
 
     public List<SongDto> getAll() {
-        return songRepository.findAll().stream()
+        List<Song> songs = songRepository.findAll();
+        return songs.stream()
                 .map(song -> {
                     SongDto songDto = songMapper.toDto(song);
                     songDto.setVotes(getSongVotes(song.getId()));
