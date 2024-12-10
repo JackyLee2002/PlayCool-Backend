@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "concert")
@@ -34,7 +35,7 @@ public class Concert {
     private Venue venue;
 
     @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
+    private Date dateTime;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
