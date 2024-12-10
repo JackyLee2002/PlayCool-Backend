@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -132,7 +131,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto getOrderById(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(null);
-        return getOrderResponseDto(order);
+        OrderResponseDto orderResponseDto = getOrderResponseDto(order);
+
+        return extractedMethod(order, orderResponseDto);
     }
 
     @Override
