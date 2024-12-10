@@ -21,7 +21,8 @@ public class OrderResponseDto {
     private String concertName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date concertDate;
-    private String AreaName;
+    private String concertImage;
+    private String areaName;
     private String seatNumber;
     private String venueName;
     private Double price;
