@@ -19,6 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
@@ -58,12 +61,14 @@ public class OrderServiceTest {
         order.setPrice(100.0);
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
+        Pageable pageable = Pageable.ofSize(10);
 
-        when(orderRepository.findOrdersByUserId(1L)).thenReturn(List.of(order));
+        Page<Order> orderPage = new PageImpl<>(List.of(order), pageable, 1);
+        when(orderRepository.findOrdersByUserId(1L, pageable)).thenReturn(orderPage);
 
-        List<OrderResponseDto> orders = orderService.getOrdersByUserId(1L);
-        assertEquals(1, orders.size());
-        assertEquals(OrderStatus.PENDING, orders.get(0).getOrderStatus());
+        Page<OrderResponseDto> orders = orderService.getOrdersByUserId(1L, pageable);
+        assertEquals(1, orders.getTotalElements());
+        assertEquals(OrderStatus.PENDING, orders.getContent().get(0).getOrderStatus());
     }
 
     @Test
@@ -85,7 +90,7 @@ public class OrderServiceTest {
         order.setCreatedAt(new Date());
 
         when(orderRepository.save(any())).thenReturn(order);
-        when(areaRepository.findById(any())).thenReturn(Optional.of(new Area(1L,new Venue(),"test",100.0,1)));
+        when(areaRepository.findById(any())).thenReturn(Optional.of(new Area(1L, new Venue(), "test", 100.0, 1)));
 
         OrderResponseDto orderResponse = orderService.createOrder(orderRequestDto);
         assertEquals(OrderStatus.PENDING, orderResponse.getOrderStatus());
@@ -110,7 +115,7 @@ public class OrderServiceTest {
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(order)).thenReturn(order);
-        when(seatRepository.findById(any())).thenReturn(Optional.of(new Seat(1L,new Area(),"A1", SeatStatus.Sold)));
+        when(seatRepository.findById(any())).thenReturn(Optional.of(new Seat(1L, new Area(), "A1", SeatStatus.Sold)));
         OrderResponseDto orderResponse = orderService.payOrder(paymentRequestDto);
         assertEquals(OrderStatus.UNUSED, orderResponse.getOrderStatus());
     }
