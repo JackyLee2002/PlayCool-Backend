@@ -44,7 +44,7 @@ public class UserController {
         user.setEmail(userRegisterRequestDto.getEmail());
         user.setPassword(passwordEncoder.encode(userRegisterRequestDto.getPassword()));
         userRepository.save(user);
-        var jwt = jwtService.generateToken(user);
+        String jwt = jwtService.generateToken(user);
         return AuthenResponseDto.builder().token(jwt).build();
 
     }
@@ -55,10 +55,10 @@ public class UserController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginRequestDto.getUsername(), userLoginRequestDto.getPassword()));
 
-       var  user = userRepository.findUserByName(userLoginRequestDto.getUsername())
+        User user = userRepository.findUserByName(userLoginRequestDto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
-        var jwt = jwtService.generateToken(user);
+        String jwt = jwtService.generateToken(user);
         return AuthenResponseDto.builder().token(jwt).build();
     }
 
