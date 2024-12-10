@@ -55,7 +55,7 @@ public class ConcertControllerIntegrationTest {
     @Test
     public void testGetConcertById() throws Exception {
         Concert concert = new Concert();
-        when(concertService.getConcertById(1L)).thenReturn(Optional.of(concert));
+        when(concertService.getConcertById(1L)).thenReturn(concert);
 
         mockMvc.perform(get("/concerts/1")
                         .contentType(MediaType.APPLICATION_JSON))

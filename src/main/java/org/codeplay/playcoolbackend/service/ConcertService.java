@@ -22,8 +22,8 @@ public class ConcertService {
         return concertRepository.findByFinishedFalse();
     }
 
-    public Optional<Concert> getConcertById(Long id) {
-        return concertRepository.findById(id);
+    public Concert getConcertById(Long id) {
+        return concertRepository.findById(id).orElse(null);
     }
 
 }

@@ -18,8 +18,8 @@ public class SeatService {
         return seatRepository.findAll();
     }
 
-    public Optional<Seat> getSeatById(Long id) {
-        return seatRepository.findById(id);
+    public Seat getSeatById(Long id) {
+        return seatRepository.findById(id).orElse(null);
     }
 
 }

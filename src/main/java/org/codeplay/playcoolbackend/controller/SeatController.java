@@ -17,14 +17,11 @@ public class SeatController {
 
     @GetMapping
     public ResponseEntity<List<Seat>> getAllSeats() {
-        List<Seat> seats = seatService.getAllSeats();
-        return ResponseEntity.ok(seats);
+        return ResponseEntity.ok(seatService.getAllSeats());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Seat> getSeatById(@PathVariable Long id) {
-        return seatService.getSeatById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(seatService.getSeatById(id));
     }
 }
