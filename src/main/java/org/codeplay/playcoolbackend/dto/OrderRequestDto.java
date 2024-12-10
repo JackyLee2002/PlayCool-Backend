@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class OrderRequestDto {
     private Long userId;
     private Long concertId;
-    private Long seatId;
-    private Integer price;
+    private Long venueId;
+    private Long areaId;
     private String paymentMethod;
 }

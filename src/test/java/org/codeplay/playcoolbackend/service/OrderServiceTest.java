@@ -90,7 +90,7 @@ public class OrderServiceTest {
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
 
-        when(orderRepository.findById(1)).thenReturn(Optional.of(order));
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(order)).thenReturn(order);
 
         OrderResponseDto orderResponse = orderService.payOrder(paymentRequestDto);
@@ -107,10 +107,10 @@ public class OrderServiceTest {
         order.setPaymentMethod("paymentMethod");
         order.setCreatedAt(new Date());
 
-        when(orderRepository.findById(1)).thenReturn(Optional.of(order));
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(order)).thenReturn(order);
 
-        OrderResponseDto orderResponse = orderService.useOrder(1);
+        OrderResponseDto orderResponse = orderService.useOrder(1L);
         assertEquals(OrderStatus.COMPLETED, orderResponse.getOrderStatus());
     }
 }
