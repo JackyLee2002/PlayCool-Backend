@@ -1,6 +1,6 @@
 package org.codeplay.playcoolbackend.service;
 
-import org.codeplay.playcoolbackend.dto.Concert;
+import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.repository.ConcertRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class ConcertService {
     private ConcertRepository concertRepository;
 
     public List<Concert> getAllConcerts() {
-        return concertRepository.findAll();
+        return concertRepository.findAllByOrderByDateTimeDesc();
     }
 
     public List<Concert> getComingConcerts() {
@@ -25,4 +25,5 @@ public class ConcertService {
     public Optional<Concert> getConcertById(Long id) {
         return concertRepository.findById(id);
     }
+
 }

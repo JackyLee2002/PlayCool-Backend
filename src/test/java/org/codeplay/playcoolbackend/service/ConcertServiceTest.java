@@ -1,6 +1,6 @@
 package org.codeplay.playcoolbackend.service;
 
-import org.codeplay.playcoolbackend.dto.Concert;
+import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.repository.ConcertRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ public class ConcertServiceTest {
     public void testGetAllConcerts() {
         Concert concert1 = new Concert();
         Concert concert2 = new Concert();
-        when(concertRepository.findAll()).thenReturn(Arrays.asList(concert1, concert2));
+        when(concertRepository.findAllByOrderByDateTimeDesc()).thenReturn(Arrays.asList(concert1, concert2));
 
         List<Concert> concerts = concertService.getAllConcerts();
         assertEquals(2, concerts.size());

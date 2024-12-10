@@ -1,6 +1,6 @@
 package org.codeplay.playcoolbackend.controller;
 
-import org.codeplay.playcoolbackend.dto.Concert;
+import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.service.ConcertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
