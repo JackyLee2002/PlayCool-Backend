@@ -1,6 +1,9 @@
 package org.codeplay.playcoolbackend.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import org.codeplay.playcoolbackend.dto.AvailableSeatsCountDto;
 import org.codeplay.playcoolbackend.entity.Concert;
+import org.codeplay.playcoolbackend.service.AreaService;
 import org.codeplay.playcoolbackend.service.ConcertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +16,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/concerts")
+@Slf4j
 public class ConcertController {
 
     @Autowired
     private ConcertService concertService;
+    @Autowired
+    private AreaService areaService;
 
     @GetMapping
     public ResponseEntity<List<Concert>> getAllConcerts() {
         List<Concert> concerts = concertService.getAllConcerts();
+        concerts.forEach(concert -> {
+            var availableSeats = areaService.getAvailableSeatsCountByVenueId(concert.getVenue().getVenueId());
+            concert.setAvailableSeats((int) availableSeats.stream().mapToLong(AvailableSeatsCountDto::getAvailableSeatsCount).sum());
+        });
         return ResponseEntity.ok(concerts);
     }
 

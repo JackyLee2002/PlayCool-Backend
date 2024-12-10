@@ -7,18 +7,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-    @Service("SqlUserDetailsService")
-    public class SqlUserDetailsService implements UserDetailsService {
+@Service("SqlUserDetailsService")
+public class SqlUserDetailsService implements UserDetailsService {
 
-        @Autowired
-        private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-        @Override
-        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-            var optionalUser = userRepository.findUserByName(username);
-            if(optionalUser.isPresent())
-                return optionalUser.get();
-            throw new UsernameNotFoundException("Invalid user with username: "+ username);
-        }
+        var optionalUser = userRepository.findUserByName(username);
+        if(optionalUser.isPresent())
+            return optionalUser.get();
+        throw new UsernameNotFoundException("Invalid user with username: "+ username);
     }
+}

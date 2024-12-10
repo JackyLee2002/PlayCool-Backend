@@ -15,7 +15,7 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
     @Query("SELECT a FROM Area a WHERE a.venue.id = :venueId")
     List<Area> findByVenue(Long venueId);
 
-    @Query("SELECT new org.codeplay.playcoolbackend.dto.AvailableSeatsCountDto(a.name, COUNT(s.seatId)) " +
+    @Query("SELECT new org.codeplay.playcoolbackend.dto.AvailableSeatsCountDto(a.areaId, a.name, a.price,COUNT(s.seatId)) " +
             "FROM Area a LEFT JOIN Seat s ON a.id = s.area.id AND s.status = 'Available' " +
             "WHERE a.venue.id = :venueId " +
             "GROUP BY a.id, a.name")
