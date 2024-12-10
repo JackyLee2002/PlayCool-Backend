@@ -63,6 +63,7 @@ public class OrderServiceImpl implements OrderService {
         if (concert != null) {
             orderResponseDto.setConcertName(concert.getTitle());
             orderResponseDto.setConcertDate(concert.getDateTime());
+            orderResponseDto.setConcertImage(concert.getConcertImage());
         }
 
         areaRepository.findById(order.getAreaId()).ifPresent(area -> {
