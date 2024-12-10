@@ -19,8 +19,8 @@ public class AreaService {
         return areaRepository.findAll();
     }
 
-    public Optional<Area> getAreaById(Long id) {
-        return areaRepository.findById(id);
+    public Area getAreaById(Long id) {
+        return areaRepository.findById(id).orElse(null);
     }
 
     public List<Area> getAreaByVenueId(Long id) {

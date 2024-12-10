@@ -32,8 +32,6 @@ public class ConcertController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Concert> getConcertById(@PathVariable Long id) {
-        return concertService.getConcertById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(concertService.getConcertById(id));
     }
 }

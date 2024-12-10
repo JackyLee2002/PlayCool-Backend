@@ -45,9 +45,9 @@ public class VenueServiceTest {
         Venue venue = new Venue();
         when(venueRepository.findById(1L)).thenReturn(Optional.of(venue));
 
-        Optional<Venue> foundVenue = venueService.getVenueById(1L);
-        assertTrue(foundVenue.isPresent());
-        assertEquals(venue, foundVenue.get());
+        Venue foundVenue = venueService.getVenueById(1L);
+        assertTrue(foundVenue != null);
+        assertEquals(venue, foundVenue);
     }
 
     @Test

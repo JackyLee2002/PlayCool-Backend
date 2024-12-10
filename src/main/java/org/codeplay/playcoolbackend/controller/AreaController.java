@@ -24,15 +24,12 @@ public class AreaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Area> getAreaById(@PathVariable Long id) {
-        return areaService.getAreaById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(areaService.getAreaById(id));
     }
 
     @GetMapping("/venue/{id}")
     public ResponseEntity<List<Area>> getAllAreas(@PathVariable Long id) {
-        List<Area> areas = areaService.getAreaByVenueId(id);
-        return ResponseEntity.ok(areas);
+        return ResponseEntity.ok(areaService.getAreaByVenueId(id));
     }
 
     @GetMapping("/availableSeats/{venueId}")

@@ -44,7 +44,7 @@ public class VenueControllerIntegrationTest {
     @Test
     public void testGetVenueById() throws Exception {
         Venue venue = new Venue();
-        when(venueService.getVenueById(1L)).thenReturn(Optional.of(venue));
+        when(venueService.getVenueById(1L)).thenReturn(venue);
 
         mockMvc.perform(get("/venues/1")
                         .contentType(MediaType.APPLICATION_JSON))
