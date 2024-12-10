@@ -25,12 +25,18 @@ public class SongController {
 
     @GetMapping("/is-voted")
     public ResponseEntity<Boolean> isVoted(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            throw new IllegalStateException("User not logged in");
+        }
         return ResponseEntity.ok(songService.isVoted(user.getId()));
     }
 
 
     @PostMapping("/vote")
     public ResponseEntity<Void> vote(@AuthenticationPrincipal User user, @RequestBody VoteDto voteDto) {
+        if (user == null) {
+            throw new IllegalStateException("User not logged in");
+        }
         voteDto.setUserId(user.getId());
         songService.vote(voteDto);
         return ResponseEntity.ok().build();
