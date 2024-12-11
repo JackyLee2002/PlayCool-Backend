@@ -182,4 +182,7 @@ public class OrderServiceImpl implements OrderService {
         return extractedMethod(saveOrder, orderResponse);
     }
 
+    public Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId).orElseThrow(null);
+    }
 }
