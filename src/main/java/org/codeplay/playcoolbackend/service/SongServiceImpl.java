@@ -1,6 +1,7 @@
 package org.codeplay.playcoolbackend.service;
 
 import org.codeplay.playcoolbackend.dto.VoteDto;
+import org.codeplay.playcoolbackend.entity.Vote;
 import org.codeplay.playcoolbackend.mapper.SongMapper;
 import org.codeplay.playcoolbackend.dto.SongDto;
 import org.codeplay.playcoolbackend.mapper.VoteMapper;
@@ -53,7 +54,7 @@ public class SongServiceImpl implements SongService {
     @Override
     public List<Long> getVotedSongId(Long userId) {
         return voteRepository.findByUserId(userId).stream()
-                .map(vote -> vote.getSongId())
+                .map(Vote::getSongId)
                 .collect(Collectors.toList());
     }
 
