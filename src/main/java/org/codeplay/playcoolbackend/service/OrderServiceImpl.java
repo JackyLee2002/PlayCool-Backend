@@ -149,12 +149,23 @@ public class OrderServiceImpl implements OrderService {
         if (availableSeats.isEmpty()) {
             throw new IllegalArgumentException("No available seats");
         }
-        Seat seat = availableSeats.get(new Random().nextInt(availableSeats.size()));
-        seat.setStatus(SeatStatus.Locked);
-        seatRepository.save(seat);
 
-        order.setSeatId(seat.getSeatId());
-        Order saveOrder = orderRepository.save(order);
+        Seat seat = availableSeats.get(new Random().nextInt(availableSeats.size()));
+        Order saveOrder = null;
+        synchronized (seat) {
+            Order ownOrder = orderRepository.findById(orderId).orElseThrow(null);
+            if(ownOrder.getSeatId() == null) {
+                seat.setStatus(SeatStatus.Locked);
+                seatRepository.save(seat);
+
+                order.setSeatId(seat.getSeatId());
+                saveOrder = orderRepository.save(order);
+            }
+        }
+
+        if (saveOrder == null) {
+            saveOrder = orderRepository.findById(orderId).orElseThrow(null);
+        }
 
         OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
         return extractedMethod(saveOrder, orderResponse);
