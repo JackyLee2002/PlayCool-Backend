@@ -21,5 +21,4 @@ public interface OrderService {
 
     OrderResponseDto snapOrder(Long orderId);
 
-    Order getOrder(Long orderId);
 }

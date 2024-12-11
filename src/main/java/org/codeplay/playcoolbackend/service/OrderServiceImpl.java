@@ -1,7 +1,5 @@
 package org.codeplay.playcoolbackend.service;
 
-import jakarta.transaction.Transactional;
-import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.common.OrderStatus;
 import org.codeplay.playcoolbackend.common.PaymentStatus;
@@ -18,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -61,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponseDto extractedMethod(Order order, OrderResponseDto orderResponseDto) {
         Concert concert = concertRepository.findById(order.getConcertId()).orElse(null);
-        if (order.getUserId()!=null) {
+        if (order.getUserId() != null) {
             userRepository.findById(order.getUserId()).ifPresent(user -> {
                 orderResponseDto.setUserName(user.getUsername());
             });
@@ -145,6 +144,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto snapOrder(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(null);
+
+        Concert concert = concertRepository.findById(order.getConcertId()).orElseThrow(null);
+        if (concert.getDateTime().before(new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000))) {
+            throw new IllegalArgumentException("The concert no open");
+        }
+
         order.setPaymentStatus(PaymentStatus.NONPAYMENT);
 
         // need seatId and the seatId status is Available
@@ -160,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
         Order saveOrder = null;
         synchronized (seat) {
             Order ownOrder = orderRepository.findById(orderId).orElseThrow(null);
-            if(ownOrder.getSeatId() == null) {
+            if (ownOrder.getSeatId() == null) {
                 seat.setStatus(SeatStatus.Locked);
                 seatRepository.save(seat);
 
@@ -177,7 +182,4 @@ public class OrderServiceImpl implements OrderService {
         return extractedMethod(saveOrder, orderResponse);
     }
 
-    public Order getOrder(Long orderId) {
-        return orderRepository.findById(orderId).orElseThrow(null);
-    }
 }
