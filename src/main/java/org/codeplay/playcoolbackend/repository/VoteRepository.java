@@ -11,4 +11,6 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     boolean existsByUserId(Long userId);
 
     Long countBySongId(Long songId);
+
+    Vote findByUserId(Long userId);
 }

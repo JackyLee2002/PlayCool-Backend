@@ -11,4 +11,6 @@ public interface SongService {
     void vote(VoteDto voteDto);
 
     Boolean isVoted(Long userId);
+
+    Long getVotedSongId(Long userId);
 }

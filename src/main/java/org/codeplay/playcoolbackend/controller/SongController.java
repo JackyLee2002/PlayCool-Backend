@@ -43,4 +43,12 @@ public class SongController {
         songService.vote(voteDto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/voted-song")
+    public ResponseEntity<Long> getVotedSongId(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        return ResponseEntity.ok(songService.getVotedSongId(user.getId()));
+    }
 }
