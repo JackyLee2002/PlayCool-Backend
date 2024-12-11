@@ -10,15 +10,13 @@ import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
 import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.Seat;
-import org.codeplay.playcoolbackend.repository.AreaRepository;
-import org.codeplay.playcoolbackend.repository.ConcertRepository;
-import org.codeplay.playcoolbackend.repository.OrderRepository;
-import org.codeplay.playcoolbackend.repository.SeatRepository;
+import org.codeplay.playcoolbackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -36,10 +34,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private SeatRepository seatRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public Page<OrderResponseDto> getOrdersByUserId(Long userId, Pageable pageable) {
-        Page<Order> orderByUserId = orderRepository.findOrdersByUserId(userId, pageable);
+        Page<Order> orderByUserId = orderRepository.findOrdersByUserIdOrderByCreatedAtDesc(userId, pageable);
         return orderByUserId.map(saveOrder -> {
             OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
             return extractedMethod(saveOrder, orderResponse);
@@ -60,6 +60,11 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponseDto extractedMethod(Order order, OrderResponseDto orderResponseDto) {
         Concert concert = concertRepository.findById(order.getConcertId()).orElse(null);
+        if (order.getUserId() != null) {
+            userRepository.findById(order.getUserId()).ifPresent(user -> {
+                orderResponseDto.setUserName(user.getUsername());
+            });
+        }
         if (concert != null) {
             orderResponseDto.setConcertName(concert.getTitle());
             orderResponseDto.setConcertDate(concert.getDateTime());
@@ -139,6 +144,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto snapOrder(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(null);
+
+        Concert concert = concertRepository.findById(order.getConcertId()).orElseThrow(null);
+        if (concert.getDateTime().before(new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000))) {
+            throw new IllegalArgumentException("The concert no open");
+        }
+
         order.setPaymentStatus(PaymentStatus.NONPAYMENT);
 
         // need seatId and the seatId status is Available
@@ -154,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
         Order saveOrder = null;
         synchronized (seat) {
             Order ownOrder = orderRepository.findById(orderId).orElseThrow(null);
-            if(ownOrder.getSeatId() == null) {
+            if (ownOrder.getSeatId() == null) {
                 seat.setStatus(SeatStatus.Locked);
                 seatRepository.save(seat);
 
