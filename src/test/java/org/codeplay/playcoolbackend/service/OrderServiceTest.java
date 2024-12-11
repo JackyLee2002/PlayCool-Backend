@@ -64,7 +64,7 @@ public class OrderServiceTest {
         Pageable pageable = Pageable.ofSize(10);
 
         Page<Order> orderPage = new PageImpl<>(List.of(order), pageable, 1);
-        when(orderRepository.findOrdersByUserId(1L, pageable)).thenReturn(orderPage);
+        when(orderRepository.findOrdersByUserIdOrderByCreatedAtDesc(1L, pageable)).thenReturn(orderPage);
 
         Page<OrderResponseDto> orders = orderService.getOrdersByUserId(1L, pageable);
         assertEquals(1, orders.getTotalElements());

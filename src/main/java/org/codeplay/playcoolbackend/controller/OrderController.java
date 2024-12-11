@@ -53,6 +53,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
     }
 
+    @GetMapping("/oauth/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrderByIdNOAUTH( @PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
     @PutMapping("/pay")
     public ResponseEntity<OrderResponseDto> payOrder(@AuthenticationPrincipal User user, @RequestBody PaymentRequestDto paymentRequestDto) {
         if (user == null) {
@@ -88,6 +93,12 @@ public class OrderController {
         if (!Objects.equals(order.getUserId(), user.getId())) {
             throw new IllegalArgumentException("You are not allowed to snap this order");
         }
+        OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
+        return ResponseEntity.ok(orderResponseDto);
+    }
+
+    @PutMapping("/snap/oauth/{orderId}")
+    public ResponseEntity<OrderResponseDto> snapNoAuthOrder(@PathVariable Long orderId) {
         OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
         return ResponseEntity.ok(orderResponseDto);
     }
