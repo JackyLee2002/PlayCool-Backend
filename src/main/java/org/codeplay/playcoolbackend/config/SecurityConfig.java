@@ -31,7 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/order/**").permitAll()
@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/seats/**").permitAll()
                         .requestMatchers("/songs/**").permitAll()
                         .requestMatchers("/songs/vote").permitAll()
+                        .requestMatchers("/orders/stream").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
