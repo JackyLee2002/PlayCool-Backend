@@ -46,16 +46,22 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Boolean isVoted(Long userId) {
-        return voteRepository.existsByUserId(userId);
+    public Boolean canVote(Long userId) {
+        return voteRepository.countByUserId(userId) == 3;
     }
 
     @Override
-    public Long getVotedSongId(Long userId) {
-        return voteRepository.findByUserId(userId).getSongId();
+    public List<Long> getVotedSongId(Long userId) {
+        return voteRepository.findByUserId(userId).stream()
+                .map(vote -> vote.getSongId())
+                .collect(Collectors.toList());
     }
 
     public Long getSongVotes(Long songId) {
         return voteRepository.countBySongId(songId);
+    }
+
+    public Long getVotesByUserId(Long userId) {
+        return voteRepository.countByUserId(userId);
     }
 }

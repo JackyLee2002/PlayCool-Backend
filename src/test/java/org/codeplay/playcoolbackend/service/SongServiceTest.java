@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -62,7 +61,7 @@ public class SongServiceTest {
         Long userId = 1L;
         when(voteRepository.existsByUserId(userId)).thenReturn(true);
 
-        boolean result = songService.isVoted(userId);
+        boolean result = songService.canVote(userId);
 
         assertEquals(true, result);
     }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +23,12 @@ public class SongController {
         return ResponseEntity.ok(songService.getAll());
     }
 
-    @GetMapping("/is-voted")
-    public ResponseEntity<Boolean> isVoted(@AuthenticationPrincipal User user) {
+    @GetMapping("/can-vote")
+    public ResponseEntity<Boolean> canVote(@AuthenticationPrincipal User user) {
         if (user == null) {
             throw new IllegalStateException("User not logged in");
         }
-        return ResponseEntity.ok(songService.isVoted(user.getId()));
+        return ResponseEntity.ok(songService.canVote(user.getId()));
     }
 
 
@@ -45,10 +44,18 @@ public class SongController {
     }
 
     @GetMapping("/voted-song")
-    public ResponseEntity<Long> getVotedSongId(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<Long>> getVotedSongId(@AuthenticationPrincipal User user) {
         if (user == null) {
             throw new IllegalStateException("User not logged in");
         }
         return ResponseEntity.ok(songService.getVotedSongId(user.getId()));
+    }
+
+    @GetMapping("/votes")
+    public ResponseEntity<Long> getVotesByUserId(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        return ResponseEntity.ok(songService.getVotesByUserId(user.getId()));
     }
 }
