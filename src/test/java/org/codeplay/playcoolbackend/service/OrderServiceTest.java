@@ -6,14 +6,8 @@ import org.codeplay.playcoolbackend.common.SeatStatus;
 import org.codeplay.playcoolbackend.dto.OrderRequestDto;
 import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
-import org.codeplay.playcoolbackend.entity.Area;
-import org.codeplay.playcoolbackend.entity.Order;
-import org.codeplay.playcoolbackend.entity.Seat;
-import org.codeplay.playcoolbackend.entity.Venue;
-import org.codeplay.playcoolbackend.repository.AreaRepository;
-import org.codeplay.playcoolbackend.repository.ConcertRepository;
-import org.codeplay.playcoolbackend.repository.OrderRepository;
-import org.codeplay.playcoolbackend.repository.SeatRepository;
+import org.codeplay.playcoolbackend.entity.*;
+import org.codeplay.playcoolbackend.repository.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,6 +38,9 @@ public class OrderServiceTest {
 
     @Mock
     private AreaRepository areaRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -77,6 +74,7 @@ public class OrderServiceTest {
         orderRequestDto.setUserId(1L);
         orderRequestDto.setConcertId(1L);
         orderRequestDto.setAreaId(1L);
+        orderRequestDto.setUserId(1L);
         orderRequestDto.setPaymentMethod("paymentMethod");
 
         Order order = new Order();
@@ -91,6 +89,7 @@ public class OrderServiceTest {
 
         when(orderRepository.save(any())).thenReturn(order);
         when(areaRepository.findById(any())).thenReturn(Optional.of(new Area(1L, new Venue(), "test", 100.0, 1)));
+        when(userRepository.findById(any())).thenReturn(Optional.of(new User()));
 
         OrderResponseDto orderResponse = orderService.createOrder(orderRequestDto);
         assertEquals(OrderStatus.PENDING, orderResponse.getOrderStatus());
