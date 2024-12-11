@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -37,13 +36,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(@AuthenticationPrincipal User user, @RequestParam int page,
-                                                               @RequestParam int pageSize) {
+    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "5") int pageSize) {
         if (user == null) {
             throw new IllegalArgumentException("Please login first");
         }
-        Pageable pageable=PageRequest.of(page,pageSize);
-        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId(),pageable));
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId(), pageable));
     }
 
     @GetMapping("/{orderId}")

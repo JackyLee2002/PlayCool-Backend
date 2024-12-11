@@ -1,6 +1,8 @@
 package org.codeplay.playcoolbackend.controller;
 
 import org.codeplay.playcoolbackend.entity.Concert;
+import org.codeplay.playcoolbackend.entity.Venue;
+import org.codeplay.playcoolbackend.service.AreaService;
 import org.codeplay.playcoolbackend.service.ConcertService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,10 +32,19 @@ public class ConcertControllerIntegrationTest {
     @MockitoBean
     private ConcertService concertService;
 
+
+
     @Test
     public void testGetAllConcerts() throws Exception {
         Concert concert1 = new Concert();
+        Venue venue = new Venue();
+        venue.setVenueId(1L);
+        concert1.setVenue(venue);
         Concert concert2 = new Concert();
+        Venue venue1 = new Venue();
+        venue1.setVenueId(1L);
+        concert2.setVenue(venue);
+
         when(concertService.getAllConcerts()).thenReturn(Arrays.asList(concert1, concert2));
 
         mockMvc.perform(get("/concerts")
