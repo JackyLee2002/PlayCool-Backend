@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.dto.OrderRequestDto;
 import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
+import org.codeplay.playcoolbackend.dto.SaleStatsDto;
 import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.User;
 import org.codeplay.playcoolbackend.service.OrderNotificationService;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -108,5 +110,10 @@ public class OrderController {
         OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
         orderNotificationService.notifyOrderChange(orderResponseDto);
         return ResponseEntity.ok(orderResponseDto);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<SaleStatsDto>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 }

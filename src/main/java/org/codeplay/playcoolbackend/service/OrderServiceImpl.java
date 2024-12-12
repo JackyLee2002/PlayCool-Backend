@@ -4,9 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.common.OrderStatus;
 import org.codeplay.playcoolbackend.common.PaymentStatus;
 import org.codeplay.playcoolbackend.common.SeatStatus;
-import org.codeplay.playcoolbackend.dto.OrderRequestDto;
-import org.codeplay.playcoolbackend.dto.OrderResponseDto;
-import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
+import org.codeplay.playcoolbackend.dto.*;
 import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.Seat;
@@ -19,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,8 +34,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private SeatRepository seatRepository;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public Page<OrderResponseDto> getOrdersByUserId(Long userId, Pageable pageable) {
@@ -184,5 +188,37 @@ public class OrderServiceImpl implements OrderService {
 
     public Order getOrder(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(null);
+    }
+
+    @Override
+    public List<SaleStatsDto> getAllOrders() {
+        List<SaleStatsDto> saleStats = orderRepository.getSaleStats();
+        StringBuilder messageBuilder = new StringBuilder();
+        AtomicReference<Double> totalPrice = new AtomicReference<>(0.0);
+
+        saleStats.stream()
+                .collect(Collectors.groupingBy(SaleStatsDto::getConcertName))
+                .forEach((concertName, stats) -> {
+                    totalPrice.set(stats.stream().mapToDouble(SaleStatsDto::getTotalRevenue).sum());
+                    messageBuilder.append("ConcertName: ").append(concertName).append("\n")
+                            .append("ConcertDate: ").append(stats.get(0).getConcertDate()).append("\n");
+                    stats.forEach(stat -> messageBuilder.append("Area: ").append(stat.getAreaName()).append("\n")
+                            .append("SoldSeats: ").append(stat.getSoldSeats()).append("\n"));
+                    messageBuilder.append("TotalPrice for all areas: ").append(totalPrice.get()).append("\n\n");
+                });
+
+        String message = messageBuilder.toString();
+        EmailResponse sendEmail = new EmailResponse();
+        sendEmail.setSubject("Concert Sales Statistics");
+        sendEmail.setMessage(message);
+        sendEmail.setEmail("3075025685@qq.com");
+        sendEmail.setStatus("SENT");
+        sendEmail.setName("Concert Sales Statistics");
+        try {
+            emailService.sendEmail(sendEmail);
+        } catch (Exception e) {
+            log.error("Failed to send email: {}", e.getMessage());
+        }
+        return saleStats;
     }
 }
