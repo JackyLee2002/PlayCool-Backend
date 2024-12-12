@@ -23,4 +23,4 @@ spring:
             enable: true
             required: true
           ssl:
-            enable: true
+            enable: false
