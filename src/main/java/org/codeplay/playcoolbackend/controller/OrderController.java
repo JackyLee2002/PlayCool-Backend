@@ -60,7 +60,6 @@ public class OrderController {
     @GetMapping("/oauth/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrderByIdNOAUTH( @PathVariable Long orderId) {
         OrderResponseDto OrderResponseDto = orderService.getOrderById(orderId);
-        orderNotificationService.notifyOrderChange(OrderResponseDto);
         return ResponseEntity.ok(OrderResponseDto);
     }
 
@@ -107,6 +106,7 @@ public class OrderController {
     @PutMapping("/snap/oauth/{orderId}")
     public ResponseEntity<OrderResponseDto> snapNoAuthOrder(@PathVariable Long orderId) {
         OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
+        orderNotificationService.notifyOrderChange(orderResponseDto);
         return ResponseEntity.ok(orderResponseDto);
     }
 }
