@@ -58,4 +58,9 @@ public class SongController {
         }
         return ResponseEntity.ok(songService.getVotesByUserId(user.getId()));
     }
+
+    @GetMapping("/all-votes")
+    public ResponseEntity<Long> getAllVotes() {
+        return ResponseEntity.ok(songService.getAllVotes());
+    }
 }

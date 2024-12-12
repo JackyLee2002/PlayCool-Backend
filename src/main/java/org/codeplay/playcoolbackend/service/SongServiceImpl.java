@@ -57,12 +57,16 @@ public class SongServiceImpl implements SongService {
                 .map(Vote::getSongId)
                 .collect(Collectors.toList());
     }
-
     public Long getSongVotes(Long songId) {
         return voteRepository.countBySongId(songId);
     }
-
+    @Override
     public Long getVotesByUserId(Long userId) {
         return voteRepository.countByUserId(userId);
+    }
+
+    @Override
+    public Long getAllVotes() {
+        return voteRepository.count();
     }
 }

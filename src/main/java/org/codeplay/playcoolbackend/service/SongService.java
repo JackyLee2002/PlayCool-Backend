@@ -15,4 +15,6 @@ public interface SongService {
     List<Long> getVotedSongId(Long userId);
 
     Long getVotesByUserId(Long songId);
+
+    Long getAllVotes();
 }
