@@ -59,7 +59,9 @@ public class OrderController {
 
     @GetMapping("/oauth/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrderByIdNOAUTH( @PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.getOrderById(orderId));
+        OrderResponseDto OrderResponseDto = orderService.getOrderById(orderId);
+        orderNotificationService.notifyOrderChange(OrderResponseDto);
+        return ResponseEntity.ok(OrderResponseDto);
     }
 
     @PutMapping("/pay")
