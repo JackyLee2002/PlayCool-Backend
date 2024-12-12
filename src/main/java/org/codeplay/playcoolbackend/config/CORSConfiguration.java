@@ -14,7 +14,7 @@ public class CORSConfiguration {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOriginPatterns("http://localhost:3000","https://playcool-frontend-qa.up.railway.app",
-                                "https://playcool-frontend-production.up.railway.app")
+                                "https://playcool-frontend-production.up.railway.app", "https://playcool.up.railway.app/")
                         .allowedMethods("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
