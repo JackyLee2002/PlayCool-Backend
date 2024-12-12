@@ -1,6 +1,7 @@
 package org.codeplay.playcoolbackend.service;
 
 import org.codeplay.playcoolbackend.dto.VoteDto;
+import org.codeplay.playcoolbackend.entity.Vote;
 import org.codeplay.playcoolbackend.mapper.SongMapper;
 import org.codeplay.playcoolbackend.dto.SongDto;
 import org.codeplay.playcoolbackend.mapper.VoteMapper;
@@ -46,16 +47,26 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public Boolean isVoted(Long userId) {
-        return voteRepository.existsByUserId(userId);
+    public Boolean canVote(Long userId) {
+        return voteRepository.countByUserId(userId) == 3;
     }
 
     @Override
-    public Long getVotedSongId(Long userId) {
-        return voteRepository.findByUserId(userId).getSongId();
+    public List<Long> getVotedSongId(Long userId) {
+        return voteRepository.findByUserId(userId).stream()
+                .map(Vote::getSongId)
+                .collect(Collectors.toList());
     }
-
     public Long getSongVotes(Long songId) {
         return voteRepository.countBySongId(songId);
+    }
+    @Override
+    public Long getVotesByUserId(Long userId) {
+        return voteRepository.countByUserId(userId);
+    }
+
+    @Override
+    public Long getAllVotes() {
+        return voteRepository.count();
     }
 }

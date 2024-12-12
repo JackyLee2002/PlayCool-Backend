@@ -1,16 +1,10 @@
 package org.codeplay.playcoolbackend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -45,4 +39,8 @@ public class Concert {
 
     @Column(name = "concert_image", nullable = false)
     private String concertImage;
+
+    @Transient
+    @Setter
+    private int availableSeats;
 }

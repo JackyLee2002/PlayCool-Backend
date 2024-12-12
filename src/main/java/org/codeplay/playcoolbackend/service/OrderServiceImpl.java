@@ -4,23 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.common.OrderStatus;
 import org.codeplay.playcoolbackend.common.PaymentStatus;
 import org.codeplay.playcoolbackend.common.SeatStatus;
-import org.codeplay.playcoolbackend.dto.OrderRequestDto;
-import org.codeplay.playcoolbackend.dto.OrderResponseDto;
-import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
+import org.codeplay.playcoolbackend.dto.*;
 import org.codeplay.playcoolbackend.entity.Concert;
 import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.Seat;
-import org.codeplay.playcoolbackend.repository.AreaRepository;
-import org.codeplay.playcoolbackend.repository.ConcertRepository;
-import org.codeplay.playcoolbackend.repository.OrderRepository;
-import org.codeplay.playcoolbackend.repository.SeatRepository;
+import org.codeplay.playcoolbackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,9 +35,15 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private SeatRepository seatRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
+
     @Override
     public Page<OrderResponseDto> getOrdersByUserId(Long userId, Pageable pageable) {
-        Page<Order> orderByUserId = orderRepository.findOrdersByUserId(userId, pageable);
+        Page<Order> orderByUserId = orderRepository.findOrdersByUserIdOrderByCreatedAtDesc(userId, pageable);
         return orderByUserId.map(saveOrder -> {
             OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
             return extractedMethod(saveOrder, orderResponse);
@@ -61,6 +64,11 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponseDto extractedMethod(Order order, OrderResponseDto orderResponseDto) {
         Concert concert = concertRepository.findById(order.getConcertId()).orElse(null);
+        if (order.getUserId() != null) {
+            userRepository.findById(order.getUserId()).ifPresent(user -> {
+                orderResponseDto.setUserName(user.getUsername());
+            });
+        }
         if (concert != null) {
             orderResponseDto.setConcertName(concert.getTitle());
             orderResponseDto.setConcertDate(concert.getDateTime());
@@ -132,12 +140,20 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto getOrderById(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(null);
-        return getOrderResponseDto(order);
+        OrderResponseDto orderResponseDto = getOrderResponseDto(order);
+
+        return extractedMethod(order, orderResponseDto);
     }
 
     @Override
     public OrderResponseDto snapOrder(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(null);
+
+        Concert concert = concertRepository.findById(order.getConcertId()).orElseThrow(null);
+        if (concert.getDateTime().before(new Date(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000))) {
+            throw new IllegalArgumentException("The concert no open");
+        }
+
         order.setPaymentStatus(PaymentStatus.NONPAYMENT);
 
         // need seatId and the seatId status is Available
@@ -148,12 +164,23 @@ public class OrderServiceImpl implements OrderService {
         if (availableSeats.isEmpty()) {
             throw new IllegalArgumentException("No available seats");
         }
-        Seat seat = availableSeats.get(new Random().nextInt(availableSeats.size()));
-        seat.setStatus(SeatStatus.Locked);
-        seatRepository.save(seat);
 
-        order.setSeatId(seat.getSeatId());
-        Order saveOrder = orderRepository.save(order);
+        Seat seat = availableSeats.get(new Random().nextInt(availableSeats.size()));
+        Order saveOrder = null;
+        synchronized (seat) {
+            Order ownOrder = orderRepository.findById(orderId).orElseThrow(null);
+            if (ownOrder.getSeatId() == null) {
+                seat.setStatus(SeatStatus.Locked);
+                seatRepository.save(seat);
+
+                order.setSeatId(seat.getSeatId());
+                saveOrder = orderRepository.save(order);
+            }
+        }
+
+        if (saveOrder == null) {
+            saveOrder = orderRepository.findById(orderId).orElseThrow(null);
+        }
 
         OrderResponseDto orderResponse = getOrderResponseDto(saveOrder);
         return extractedMethod(saveOrder, orderResponse);
@@ -161,5 +188,37 @@ public class OrderServiceImpl implements OrderService {
 
     public Order getOrder(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(null);
+    }
+
+    @Override
+    public List<SaleStatsDto> getAllOrders() {
+        List<SaleStatsDto> saleStats = orderRepository.getSaleStats();
+        StringBuilder messageBuilder = new StringBuilder();
+        AtomicReference<Double> totalPrice = new AtomicReference<>(0.0);
+
+        saleStats.stream()
+                .collect(Collectors.groupingBy(SaleStatsDto::getConcertName))
+                .forEach((concertName, stats) -> {
+                    totalPrice.set(stats.stream().mapToDouble(SaleStatsDto::getTotalRevenue).sum());
+                    messageBuilder.append("ConcertName: ").append(concertName).append("\n")
+                            .append("ConcertDate: ").append(stats.get(0).getConcertDate()).append("\n");
+                    stats.forEach(stat -> messageBuilder.append("Area: ").append(stat.getAreaName()).append("\n")
+                            .append("SoldSeats: ").append(stat.getSoldSeats()).append("\n"));
+                    messageBuilder.append("TotalPrice for all areas: ").append(totalPrice.get()).append("\n\n");
+                });
+
+        String message = messageBuilder.toString();
+        EmailResponse sendEmail = new EmailResponse();
+        sendEmail.setSubject("Concert Sales Statistics");
+        sendEmail.setMessage(message);
+        sendEmail.setEmail("3075025685@qq.com");
+        sendEmail.setStatus("SENT");
+        sendEmail.setName("Concert Sales Statistics");
+        try {
+            emailService.sendEmail(sendEmail);
+        } catch (Exception e) {
+            log.error("Failed to send email: {}", e.getMessage());
+        }
+        return saleStats;
     }
 }

@@ -4,8 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.codeplay.playcoolbackend.dto.OrderRequestDto;
 import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
+import org.codeplay.playcoolbackend.dto.SaleStatsDto;
 import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.User;
+import org.codeplay.playcoolbackend.service.OrderNotificationService;
 import org.codeplay.playcoolbackend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,9 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private OrderNotificationService orderNotificationService;
+
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@AuthenticationPrincipal User user, @RequestBody OrderRequestDto orderRequestDto) {
         if (user == null) {
@@ -37,13 +42,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(@AuthenticationPrincipal User user, @RequestParam int page,
-                                                               @RequestParam int pageSize) {
+    public ResponseEntity<Page<OrderResponseDto>> getAllOrders(@AuthenticationPrincipal User user, @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "5") int pageSize) {
         if (user == null) {
             throw new IllegalArgumentException("Please login first");
         }
-        Pageable pageable=PageRequest.of(page,pageSize);
-        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId(),pageable));
+        Pageable pageable = PageRequest.of(page, pageSize);
+        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId(), pageable));
     }
 
     @GetMapping("/{orderId}")
@@ -52,6 +57,12 @@ public class OrderController {
             throw new IllegalArgumentException("Please login first");
         }
         return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
+    @GetMapping("/oauth/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrderByIdNOAUTH( @PathVariable Long orderId) {
+        OrderResponseDto OrderResponseDto = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(OrderResponseDto);
     }
 
     @PutMapping("/pay")
@@ -90,6 +101,19 @@ public class OrderController {
             throw new IllegalArgumentException("You are not allowed to snap this order");
         }
         OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
+        orderNotificationService.notifyOrderChange(orderResponseDto);
         return ResponseEntity.ok(orderResponseDto);
+    }
+
+    @PutMapping("/snap/oauth/{orderId}")
+    public ResponseEntity<OrderResponseDto> snapNoAuthOrder(@PathVariable Long orderId) {
+        OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
+        orderNotificationService.notifyOrderChange(orderResponseDto);
+        return ResponseEntity.ok(orderResponseDto);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<SaleStatsDto>> getAllOrders() {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 }

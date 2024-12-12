@@ -10,7 +10,11 @@ public interface SongService {
 
     void vote(VoteDto voteDto);
 
-    Boolean isVoted(Long userId);
+    Boolean canVote(Long userId);
 
-    Long getVotedSongId(Long userId);
+    List<Long> getVotedSongId(Long userId);
+
+    Long getVotesByUserId(Long songId);
+
+    Long getAllVotes();
 }
