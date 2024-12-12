@@ -13,8 +13,12 @@ public class CORSConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
-                        .allowedMethods("*");
+                        .allowedOriginPatterns("http://localhost:3000","https://playcool-frontend-qa.up.railway.app",
+                                "https://playcool-frontend-production.up.railway.app")
+                        .allowedMethods("*")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);;
             }
         };
     }

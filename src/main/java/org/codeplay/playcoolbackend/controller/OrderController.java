@@ -6,6 +6,7 @@ import org.codeplay.playcoolbackend.dto.OrderResponseDto;
 import org.codeplay.playcoolbackend.dto.PaymentRequestDto;
 import org.codeplay.playcoolbackend.entity.Order;
 import org.codeplay.playcoolbackend.entity.User;
+import org.codeplay.playcoolbackend.service.OrderNotificationService;
 import org.codeplay.playcoolbackend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderNotificationService orderNotificationService;
 
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(@AuthenticationPrincipal User user, @RequestBody OrderRequestDto orderRequestDto) {
@@ -51,6 +55,13 @@ public class OrderController {
             throw new IllegalArgumentException("Please login first");
         }
         return ResponseEntity.ok(orderService.getOrderById(orderId));
+    }
+
+    @GetMapping("/oauth/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrderByIdNOAUTH( @PathVariable Long orderId) {
+        OrderResponseDto OrderResponseDto = orderService.getOrderById(orderId);
+        orderNotificationService.notifyOrderChange(OrderResponseDto);
+        return ResponseEntity.ok(OrderResponseDto);
     }
 
     @PutMapping("/pay")
@@ -88,6 +99,13 @@ public class OrderController {
         if (!Objects.equals(order.getUserId(), user.getId())) {
             throw new IllegalArgumentException("You are not allowed to snap this order");
         }
+        OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
+        orderNotificationService.notifyOrderChange(orderResponseDto);
+        return ResponseEntity.ok(orderResponseDto);
+    }
+
+    @PutMapping("/snap/oauth/{orderId}")
+    public ResponseEntity<OrderResponseDto> snapNoAuthOrder(@PathVariable Long orderId) {
         OrderResponseDto orderResponseDto = orderService.snapOrder(orderId);
         return ResponseEntity.ok(orderResponseDto);
     }
