@@ -63,4 +63,12 @@ public class SongController {
     public ResponseEntity<Long> getAllVotes() {
         return ResponseEntity.ok(songService.getAllVotes());
     }
+
+    @PostMapping("/mock")
+    public ResponseEntity<Void> vote(@RequestBody VoteDto voteDto) {
+        voteDto.setUserId((long) -1);
+        songService.vote(voteDto);
+        return ResponseEntity.ok().build();
+    }
+
 }
