@@ -1,5 +1,6 @@
 package org.codeplay.playcoolbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Concert {
     private Venue venue;
 
     @Column(name = "date_time", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date dateTime;
 
     @Column(name = "description", columnDefinition = "TEXT")
